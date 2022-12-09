@@ -1,5 +1,9 @@
 pushd %~dp0
 
+pushd recipes/benchmark
+conan create all/conanfile.py benchmark/1.7.1@ -pr:b=default -pr:h=default
+popd
+
 pushd recipes/catch2
 conan create 2.x.x/conanfile.py catch2/2.13.9@ -pr:b=default -pr:h=default
 popd
