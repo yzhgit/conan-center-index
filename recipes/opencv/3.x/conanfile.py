@@ -36,8 +36,8 @@ class OpenCVConan(ConanFile):
         "fPIC": True,
         "parallel": False,
         "contrib": False,
-        "with_jpeg": "libjpeg",
-        "with_png": True,
+        "with_jpeg": False,
+        "with_png": False,
         "with_tiff": False,
         "with_jasper": False,
         "with_openexr": False,
@@ -81,33 +81,33 @@ class OpenCVConan(ConanFile):
         self.options["*"].with_libjpeg = self.options.with_jpeg
         self.options["*"].with_jpeg = self.options.with_jpeg
 
-    # def requirements(self):
-    #     self.requires("zlib/1.2.12")
-    #     if self.options.with_jpeg == "libjpeg":
-    #         self.requires("libjpeg/9d")
-    #     elif self.options.with_jpeg == "libjpeg-turbo":
-    #         self.requires("libjpeg-turbo/2.1.2")
-    #     if self.options.with_png:
-    #         self.requires("libpng/1.6.37")
-    #     if self.options.with_jasper:
-    #         self.requires("jasper/2.0.33")
-    #     if self.options.with_openexr:
-    #         self.requires("openexr/2.5.7")
-    #     if self.options.with_tiff:
-    #         self.requires("libtiff/4.3.0")
-    #     if self.options.with_eigen:
-    #         self.requires("eigen/3.3.9")
-    #     if self.options.parallel == "tbb":
-    #         self.requires("onetbb/2020.3")
-    #     if self.options.with_webp:
-    #         self.requires("libwebp/1.2.2")
-    #     if self.options.contrib:
-    #         self.requires("freetype/2.11.1")
-    #         self.requires("harfbuzz/3.2.0")
-    #         self.requires("gflags/2.2.2")
-    #         self.requires("glog/0.5.0")
-    #     if self.options.get_safe("with_gtk"):
-    #         self.requires("gtk/system")
+    def requirements(self):
+        # self.requires("zlib/1.2.12")
+        if self.options.with_jpeg == "libjpeg":
+            self.requires("libjpeg/9d")
+        elif self.options.with_jpeg == "libjpeg-turbo":
+            self.requires("libjpeg-turbo/2.1.2")
+        if self.options.with_png:
+            self.requires("libpng/1.6.37")
+        if self.options.with_jasper:
+            self.requires("jasper/2.0.33")
+        if self.options.with_openexr:
+            self.requires("openexr/2.5.7")
+        if self.options.with_tiff:
+            self.requires("libtiff/4.3.0")
+        if self.options.with_eigen:
+            self.requires("eigen/3.3.9")
+        if self.options.parallel == "tbb":
+            self.requires("onetbb/2020.3")
+        if self.options.with_webp:
+            self.requires("libwebp/1.2.2")
+        if self.options.contrib:
+            self.requires("freetype/2.11.1")
+            self.requires("harfbuzz/3.2.0")
+            self.requires("gflags/2.2.2")
+            self.requires("glog/0.5.0")
+        if self.options.get_safe("with_gtk"):
+            self.requires("gtk/system")
 
     def validate(self):
         if self.settings.compiler.get_safe("cppstd") and self.options.with_openexr:
@@ -125,7 +125,7 @@ class OpenCVConan(ConanFile):
                   destination=self._contrib_folder, strip_root=True)
 
     def _patch_opencv(self):
-        tools.rmdir(os.path.join(self._source_subfolder, "3rdparty"))
+        # tools.rmdir(os.path.join(self._source_subfolder, "3rdparty"))
         if self.options.contrib:
             freetype_cmake = os.path.join(self._contrib_folder, "modules", "freetype", "CMakeLists.txt")
             tools.replace_in_file(freetype_cmake, "ocv_check_modules(FREETYPE freetype2)", "find_package(Freetype REQUIRED)")
@@ -181,10 +181,10 @@ class OpenCVConan(ConanFile):
         self._cmake.definitions["BUILD_ZLIB"] = True
         self._cmake.definitions["BUILD_JPEG"] = True
         self._cmake.definitions["BUILD_PNG"] = True
-        self._cmake.definitions["BUILD_TIFF"] = False
+        self._cmake.definitions["BUILD_TIFF"] = True
         self._cmake.definitions["BUILD_JASPER"] = False
         self._cmake.definitions["BUILD_OPENEXR"] = False
-        self._cmake.definitions["BUILD_WEBP"] = False
+        self._cmake.definitions["BUILD_WEBP"] = True
         self._cmake.definitions["BUILD_TBB"] = False
         self._cmake.definitions["BUILD_JPEG_TURBO_DISABLE"] = True
         self._cmake.definitions["BUILD_IPP_IW"] = False
@@ -213,7 +213,7 @@ class OpenCVConan(ConanFile):
         self._cmake.definitions["BUILD_opencv_superres"] = False
         self._cmake.definitions["BUILD_opencv_features2d"] = False
         self._cmake.definitions["BUILD_opencv_calib3d"] = False
-        self._cmake.definitions["BUILD_opencv_videostab"] = False
+        self._cmake.definitions["BUILD_opencv_video"] = False
         self._cmake.definitions["BUILD_opencv_videostab"] = False
 
         self._cmake.definitions["WITH_CUFFT"] = False
@@ -267,14 +267,14 @@ class OpenCVConan(ConanFile):
 
         self._cmake.definitions["WITH_JPEG"] = self.options.with_jpeg
         self._cmake.definitions["WITH_PNG"] = self.options.with_png
-        # self._cmake.definitions["WITH_TIFF"] = self.options.with_tiff
-        self._cmake.definitions["WITH_JASPER"] = False
-        self._cmake.definitions["WITH_OPENEXR"] = False
-        # self._cmake.definitions["WITH_EIGEN"] = False
-        # self._cmake.definitions["WITH_WEBP"] = self.options.with_webp
-        # self._cmake.definitions["WITH_DSHOW"] = self._is_msvc
-        # self._cmake.definitions["WITH_MSMF"] = self._is_msvc
-        # self._cmake.definitions["WITH_MSMF_DXVA"] = self._is_msvc
+        self._cmake.definitions["WITH_TIFF"] = self.options.with_tiff
+        self._cmake.definitions["WITH_JASPER"] = self.options.with_jasper
+        self._cmake.definitions["WITH_OPENEXR"] = self.options.with_openexr
+        self._cmake.definitions["WITH_EIGEN"] = self.options.with_eigen
+        self._cmake.definitions["WITH_WEBP"] = self.options.with_webp
+        self._cmake.definitions["WITH_DSHOW"] = self._is_msvc
+        self._cmake.definitions["WITH_MSMF"] = self._is_msvc
+        self._cmake.definitions["WITH_MSMF_DXVA"] = self._is_msvc
         self._cmake.definitions["WITH_GTK"] = self.options.get_safe("with_gtk", False)
         self._cmake.definitions["WITH_GTK_2_X"] = self.options.get_safe("with_gtk", False)
 
@@ -370,7 +370,7 @@ class OpenCVConan(ConanFile):
             return ["gtk::gtk"] if self.options.get_safe("with_gtk") else []
 
         opencv_components = [
-            {"target": "opencv_core",       "lib": "core",       "requires": ["zlib::zlib"] + eigen() + parallel()},
+            {"target": "opencv_core",       "lib": "core",       "requires": eigen() + parallel()},
             {"target": "opencv_flann",      "lib": "flann",      "requires": ["opencv_core"] + eigen()},
             {"target": "opencv_imgproc",    "lib": "imgproc",    "requires": ["opencv_core"] + eigen()},
             {"target": "opencv_ml",         "lib": "ml",         "requires": ["opencv_core"] + eigen()},

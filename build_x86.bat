@@ -33,7 +33,7 @@ conan create all/conanfile.py nlohmann_json/3.9.1@ -pr:b=default -pr:h=default
 popd
 
 pushd recipes/opencv
-conan create 3.x/conanfile.py opencv/3.4.12@ -pr:b=default -pr:h=default
+conan create 3.x/conanfile.py opencv/3.4.12@ -o opencv:shared=True -pr:b=default -pr:h=default
 popd
 
 pushd recipes/stb
