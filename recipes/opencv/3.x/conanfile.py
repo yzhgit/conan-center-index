@@ -43,7 +43,7 @@ class OpenCVConan(ConanFile):
         "with_openexr": False,
         "with_eigen": False,
         "with_webp": False,
-        "with_gtk": True,
+        "with_gtk": False,
         "nonfree": False,
     }
 
@@ -275,8 +275,8 @@ class OpenCVConan(ConanFile):
         self._cmake.definitions["WITH_DSHOW"] = self._is_msvc
         self._cmake.definitions["WITH_MSMF"] = self._is_msvc
         self._cmake.definitions["WITH_MSMF_DXVA"] = self._is_msvc
-        self._cmake.definitions["WITH_GTK"] = self.options.get_safe("with_gtk", False)
-        self._cmake.definitions["WITH_GTK_2_X"] = self.options.get_safe("with_gtk", False)
+        # self._cmake.definitions["WITH_GTK"] = self.options.get_safe("with_gtk", False)
+        # self._cmake.definitions["WITH_GTK_2_X"] = self.options.get_safe("with_gtk", False)
 
         self._cmake.definitions["OPENCV_MODULES_PUBLIC"] = "opencv"
         self._cmake.definitions["OPENCV_ENABLE_NONFREE"] = self.options.nonfree
