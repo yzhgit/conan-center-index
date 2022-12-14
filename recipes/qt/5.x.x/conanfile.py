@@ -60,17 +60,9 @@ class QtConan(ConanFile):
 
         "opengl": ["no", "es2", "desktop", "dynamic"],
         "openssl": [True, False],
-        "with_pcre2": [True, False],
         "with_glib": [True, False],
-        # "with_libiconv": [True, False],  # QTBUG-84708 Qt tests failure "invalid conversion from const char** to char**"
-        "with_doubleconversion": [True, False],
-        "with_freetype": [True, False],
         "with_fontconfig": [True, False],
         "with_icu": [True, False],
-        "with_harfbuzz": [True, False],
-        "with_libjpeg": ["libjpeg", "libjpeg-turbo", False],
-        "with_libpng": [True, False],
-        "with_sqlite3": [True, False],
         "with_mysql": [True, False],
         "with_pq": [True, False],
         "with_odbc": [True, False],
@@ -82,7 +74,6 @@ class QtConan(ConanFile):
         "with_dbus": [True, False],
         "with_gssapi": [True, False],
         "with_atspi": [True, False],
-        "with_md4c": [True, False],
 
         "gui": [True, False],
         "widgets": [True, False],
@@ -99,17 +90,9 @@ class QtConan(ConanFile):
         "shared": False,
         "opengl": "desktop",
         "openssl": False,
-        "with_pcre2": False,
         "with_glib": False,
-        # "with_libiconv": True, # QTBUG-84708
-        "with_doubleconversion": False,
-        "with_freetype": False,
         "with_fontconfig": False,
         "with_icu": False,
-        "with_harfbuzz": False,
-        "with_libjpeg": False,
-        "with_libpng": False,
-        "with_sqlite3": False,
         "with_mysql": False,
         "with_pq": False,
         "with_odbc": False,
@@ -121,7 +104,6 @@ class QtConan(ConanFile):
         "with_dbus": False,
         "with_gssapi": False,
         "with_atspi": False,
-        "with_md4c": False,
 
         "gui": True,
         "widgets": True,
@@ -130,7 +112,7 @@ class QtConan(ConanFile):
         "cross_compile": None,
         "sysroot": None,
         "config": None,
-        "multiconfiguration": True
+        "multiconfiguration": False
     }
     default_options.update({module: (module in ["qttools", "qttranslations"]) for module in _submodules})
 
@@ -235,12 +217,7 @@ class QtConan(ConanFile):
 
         if not self.options.gui:
             del self.options.opengl
-            del self.options.with_freetype
             del self.options.with_fontconfig
-            del self.options.with_harfbuzz
-            del self.options.with_libjpeg
-            del self.options.with_libpng
-            del self.options.with_md4c
 
         if not self.options.with_dbus:
             del self.options.with_atspi
@@ -317,13 +294,6 @@ class QtConan(ConanFile):
         if self.settings.os != "Windows" and self.options.get_safe("opengl", "no") == "dynamic":
             raise ConanInvalidConfiguration("Dynamic OpenGL is supported only on Windows.")
 
-        if self.options.get_safe("with_fontconfig", False) and not self.options.get_safe("with_freetype", False):
-            raise ConanInvalidConfiguration("with_fontconfig cannot be enabled if with_freetype is disabled.")
-
-        # if not self.options.with_doubleconversion and str(self.settings.compiler.libcxx) != "libc++":
-        #     raise ConanInvalidConfiguration("Qt without libc++ needs qt:with_doubleconversion. "
-        #                                     "Either enable qt:with_doubleconversion or switch to libc++")
-
         if "MT" in self.settings.get_safe("compiler.runtime", default="") and self.options.shared:
             raise ConanInvalidConfiguration("Qt cannot be built as shared library with static runtime")
 
@@ -346,34 +316,14 @@ class QtConan(ConanFile):
                                             "cf https://doc.qt.io/qt-5/configure-options.html#cross-compilation-options")
 
     def requirements(self):
-        # self.requires("zlib/1.2.13")
         if self.options.openssl:
             self.requires("openssl/1.1.1s")
-        if self.options.with_pcre2:
-            self.requires("pcre2/10.40")
         if self.options.with_glib:
             self.requires("glib/2.74.0")
-        # if self.options.with_libiconv: # QTBUG-84708
-        #     self.requires("libiconv/1.16")# QTBUG-84708
-        if self.options.with_doubleconversion and not self.options.multiconfiguration:
-            self.requires("double-conversion/3.2.1")
-        if self.options.get_safe("with_freetype", False) and not self.options.multiconfiguration:
-            self.requires("freetype/2.12.1")
         if self.options.get_safe("with_fontconfig", False):
             self.requires("fontconfig/2.13.93")
         if self.options.get_safe("with_icu", False):
             self.requires("icu/71.1")
-        if self.options.get_safe("with_harfbuzz", False) and not self.options.multiconfiguration:
-            self.requires("harfbuzz/5.3.1")
-        if self.options.get_safe("with_libjpeg", False) and not self.options.multiconfiguration:
-            if self.options.with_libjpeg == "libjpeg-turbo":
-                self.requires("libjpeg-turbo/2.1.4")
-            else:
-                self.requires("libjpeg/9e")
-        if self.options.get_safe("with_libpng", False) and not self.options.multiconfiguration:
-            self.requires("libpng/1.6.38")
-        if self.options.with_sqlite3 and not self.options.multiconfiguration:
-            self.requires("sqlite3/3.39.4")
             self.options["sqlite3"].enable_column_metadata = True
         if self.options.get_safe("with_mysql", False):
             self.requires("libmysqlclient/8.0.30")
@@ -413,8 +363,6 @@ class QtConan(ConanFile):
             self.requires("krb5/1.18.3") # conan-io/conan-center-index#4102
         if self.options.get_safe("with_atspi"):
             self.requires("at-spi2-core/2.46.0")
-        if self.options.get_safe("with_md4c", False):
-            self.requires("md4c/0.4.8")
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version],
@@ -595,10 +543,8 @@ class QtConan(ConanFile):
             else:
                 args += ["-openssl-linked"]
 
-        # args.append("--iconv=" + ("gnu" if self.options.with_libiconv else "no"))# QTBUG-84708
-
         args.append("--glib=" + ("yes" if self.options.with_glib else "no"))
-        args.append("--pcre=" + ("system" if self.options.with_pcre2 else "qt"))
+        args.append("--pcre=qt")
         args.append("--fontconfig=" + ("yes" if self.options.get_safe("with_fontconfig", False) else "no"))
         args.append("--icu=" + ("yes" if self.options.get_safe("with_icu", False) else "no"))
         args.append("--sql-mysql=" + ("yes" if self.options.get_safe("with_mysql", False) else "no"))
@@ -618,27 +564,18 @@ class QtConan(ConanFile):
 
         args.append("-feature-gssapi" if self.options.get_safe("with_gssapi", False) else "-no-feature-gssapi")
 
-        for opt, conf_arg in [
-                              ("with_doubleconversion", "doubleconversion"),
-                              ("with_freetype", "freetype"),
-                              ("with_harfbuzz", "harfbuzz"),
-                              ("with_libjpeg", "libjpeg"),
-                              ("with_libpng", "libpng"),
-                              ("with_sqlite3", "sqlite"),
-                              ("with_md4c", "libmd4c")]:
-            if self.options.get_safe(opt, False):
-                if self.options.multiconfiguration:
-                    args += ["-qt-" + conf_arg]
-                else:
-                    args += ["-system-" + conf_arg]
-            else:
-                args += ["-qt-" + conf_arg]
+        args.append("-qt-doubleconversion")
+        args.append("-qt-freetype")
+        args.append("-qt-harfbuzz")
+        args.append("-qt-libjpeg")
+        args.append("-qt-libpng")
+        args.append("-qt-sqlite")
+        args.append("-qt-libmd4c")
 
         libmap = [("zlib", "ZLIB"),
                   ("openssl", "OPENSSL"),
                   ("pcre2", "PCRE2"),
                   ("glib", "GLIB"),
-                  # ("libiconv", "ICONV"),# QTBUG-84708
                   ("double-conversion", "DOUBLECONVERSION"),
                   ("freetype", "FREETYPE"),
                   ("fontconfig", "FONTCONFIG"),
@@ -969,12 +906,7 @@ Examples = bin/datadir/examples""")
                 requires.append("Core")
             self.cpp_info.components[componentname].requires = _get_corrected_reqs(requires)
 
-        # core_reqs = ["zlib::zlib"]
         core_reqs = []
-        if self.options.with_pcre2:
-            core_reqs.append("pcre2::pcre2")
-        if self.options.with_doubleconversion:
-            core_reqs.append("double-conversion::double-conversion")
         if self.options.get_safe("with_icu", False):
             core_reqs.append("icu::icu")
         if self.options.with_zstd:
@@ -997,24 +929,10 @@ Examples = bin/datadir/examples""")
             gui_reqs = []
             if self.options.with_dbus:
                 gui_reqs.append("DBus")
-            if self.options.with_freetype:
-                gui_reqs.append("freetype::freetype")
-            if self.options.with_libpng:
-                gui_reqs.append("libpng::libpng")
             if self.options.get_safe("with_fontconfig", False):
                 gui_reqs.append("fontconfig::fontconfig")
             if self.settings.os in ["Linux", "FreeBSD"]:
                 gui_reqs.extend(["xorg::xorg", "xkbcommon::xkbcommon"])
-            # if self.options.get_safe("opengl", "no") != "no":
-            #     gui_reqs.append("opengl::opengl")
-            if self.options.with_harfbuzz:
-                gui_reqs.append("harfbuzz::harfbuzz")
-            if self.options.with_libjpeg == "libjpeg-turbo":
-                gui_reqs.append("libjpeg-turbo::libjpeg-turbo")
-            if self.options.with_libjpeg == "libjpeg":
-                gui_reqs.append("libjpeg::libjpeg")
-            if self.options.with_md4c:
-                gui_reqs.append("md4c::md4c")
             _create_module("Gui", gui_reqs)
             _add_build_module("qtGui", self._cmake_qt5_private_file("Gui"))
 
@@ -1030,8 +948,6 @@ Examples = bin/datadir/examples""")
                 self.cpp_info.components["qtFontDatabaseSupport"].frameworks.append("AppKit" if self.settings.os == "Macos" else "UIKit")
             if self.options.get_safe("with_fontconfig"):
                 self.cpp_info.components["qtFontDatabaseSupport"].requires.append("fontconfig::fontconfig")
-            if self.options.get_safe("with_freetype"):
-                self.cpp_info.components["qtFontDatabaseSupport"].requires.append("freetype::freetype")
 
 
             _create_module("ThemeSupport", ["Core", "Gui"])
@@ -1090,8 +1006,6 @@ Examples = bin/datadir/examples""")
                 _create_module("XcbQpa", xcb_qpa_reqs, has_include_dir=False)
                 _create_plugin("QXcbIntegrationPlugin", "qxcb", "platforms", ["Core", "Gui", "XcbQpa"])
 
-        if self.options.with_sqlite3:
-            _create_plugin("QSQLiteDriverPlugin", "qsqlite", "sqldrivers", ["sqlite3::sqlite3"])
         if self.options.with_pq:
             _create_plugin("QPSQLDriverPlugin", "qsqlpsql", "sqldrivers", ["libpq::libpq"])
         if self.options.get_safe("with_mysql", False):

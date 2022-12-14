@@ -6,7 +6,7 @@ from conans import ConanFile, tools, RunEnvironment, CMake
 
 class TestPackageConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    generators = "cmake", "cmake_find_package_multi"
+    generators = "qt", "cmake", "cmake_find_package_multi"
 
     def _build_with_cmake_find_package_multi(self):
         self.output.info("Building with cmake_find_package_multi")
