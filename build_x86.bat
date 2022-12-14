@@ -48,4 +48,21 @@ pushd recipes/vcglib
 conan create all/conanfile.py vcglib/2020.12@ -pr:b=default -pr:h=default
 popd
 
+pushd recipes/ninja
+conan create all/conanfile.py ninja/1.11.1@ -pr:b=default -pr:h=default
+popd
+
+pushd recipes/meson
+conan create all/conanfile.py meson/0.59.3@ -pr:b=default -pr:h=default
+popd
+
+pushd recipes/jom
+conan create all/conanfile.py jom/1.1.3@ -pr:b=default -pr:h=default
+popd
+
+pushd recipes/qt
+conan create 5.x.x/conanfile.py qt/5.15.7@ -o qt:shared=True -pr:b=default -pr:h=default --keep-source
+REM conan create 5.x.x/conanfile.py qt/5.15.7@ -o qt:shared=True -pr:b=default -pr:h=default --keep-source
+popd
+
 popd

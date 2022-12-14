@@ -1,0 +1,5 @@
+[options]
+
+[properties]
+native_file = ['E:\\OpenSource\\conan-center-private\\recipes\\meson\\all\\test_package\\build-release\\conan\\conan_meson_native.ini']
+
