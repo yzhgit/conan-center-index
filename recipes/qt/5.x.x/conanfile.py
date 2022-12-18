@@ -25,17 +25,7 @@ class qt(Generator):
     def content(self):
         return """[Paths]
 Prefix = %s
-ArchData = bin/archdatadir
-HostData = bin/archdatadir
-Data = bin/datadir
-Sysconf = bin/sysconfdir
-LibraryExecutables = bin/archdatadir/bin
-Plugins = bin/archdatadir/plugins
-Imports = bin/archdatadir/imports
-Qml2Imports = bin/archdatadir/qml
-Translations = bin/datadir/translations
-Documentation = bin/datadir/doc
-Examples = bin/datadir/examples""" % self.conanfile.deps_cpp_info["qt"].rootpath.replace("\\", "/")
+""" % self.conanfile.deps_cpp_info["qt"].rootpath.replace("\\", "/")
 
 
 class QtConan(ConanFile):
@@ -274,9 +264,9 @@ class QtConan(ConanFile):
         args = ["-confirm-license", "-silent", "-nomake examples", "-nomake tests",
                 f"-prefix {self.package_folder}"]
         args.append("-v")
-        args.append("-archdatadir  %s" % os.path.join(self.package_folder, "bin", "archdatadir"))
-        args.append("-datadir  %s" % os.path.join(self.package_folder, "bin", "datadir"))
-        args.append("-sysconfdir  %s" % os.path.join(self.package_folder, "bin", "sysconfdir"))
+        # args.append("-archdatadir  %s" % os.path.join(self.package_folder, "bin", "archdatadir"))
+        # args.append("-datadir  %s" % os.path.join(self.package_folder, "bin", "datadir"))
+        # args.append("-sysconfdir  %s" % os.path.join(self.package_folder, "bin", "sysconfdir"))
         args.append("-opensource")
         if self.settings.os == "Windows":
             args.append("-mp")
@@ -472,17 +462,7 @@ class QtConan(ConanFile):
             self.run(f"{self._make_program()} install")
         save(self, os.path.join(self.package_folder, "bin", "qt.conf"), """[Paths]
 Prefix = ..
-ArchData = bin/archdatadir
-HostData = bin/archdatadir
-Data = bin/datadir
-Sysconf = bin/sysconfdir
-LibraryExecutables = bin/archdatadir/bin
-Plugins = bin/archdatadir/plugins
-Imports = bin/archdatadir/imports
-Qml2Imports = bin/archdatadir/qml
-Translations = bin/datadir/translations
-Documentation = bin/datadir/doc
-Examples = bin/datadir/examples""")
+""")
         self.copy("*LICENSE*", src="qt5/", dst="licenses")
         for module in self._submodules:
             rmdir(self, os.path.join(self.package_folder, "licenses", module))
@@ -651,7 +631,7 @@ Examples = bin/datadir/examples""")
             self.cpp_info.components[componentname].names["cmake_find_package_multi"] = pluginname
             if not self.options.shared:
                 self.cpp_info.components[componentname].libs = [libname + libsuffix]
-            self.cpp_info.components[componentname].libdirs = [os.path.join("bin", "archdatadir", "plugins", plugintype)]
+            self.cpp_info.components[componentname].libdirs = [os.path.join("plugins", plugintype)]
             self.cpp_info.components[componentname].includedirs = []
             if "Core" not in requires:
                 requires.append("Core")
@@ -787,7 +767,7 @@ Examples = bin/datadir/examples""")
                 self.cpp_info.components["qtCore"].frameworks.append("Cocoa")     # qtcore requires "_OBJC_CLASS_$_NSApplication" and more, which are in "Cocoa" framework
                 self.cpp_info.components["qtCore"].frameworks.append("Security")  # qtcore requires "_SecRequirementCreateWithString" and more, which are in "Security" framework
 
-        self.cpp_info.components["qtCore"].builddirs.append(os.path.join("bin","archdatadir","bin"))
+        # self.cpp_info.components["qtCore"].builddirs.append(os.path.join("bin","archdatadir","bin"))
         _add_build_module("qtCore", self._cmake_core_extras_file)
         _add_build_module("qtCore", self._cmake_qt5_private_file("Core"))
 
@@ -803,7 +783,7 @@ Examples = bin/datadir/examples""")
         mkspecs_dir_begin = qt5core_config_extras_mkspec_dir_cmake.find("mkspecs/")
         mkspecs_dir_end = qt5core_config_extras_mkspec_dir_cmake.find("\"", mkspecs_dir_begin)
         mkspecs_dir = qt5core_config_extras_mkspec_dir_cmake[mkspecs_dir_begin:mkspecs_dir_end].split('/')
-        mkspecs_path = os.path.join("bin", "archdatadir", *mkspecs_dir)
+        mkspecs_path = os.path.join(*mkspecs_dir)
         assert os.path.exists(mkspecs_path)
         self.cpp_info.components["qtCore"].includedirs.append(mkspecs_path)
 

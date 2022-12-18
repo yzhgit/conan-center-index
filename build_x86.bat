@@ -48,14 +48,6 @@ pushd recipes/vcglib
 conan create all/conanfile.py vcglib/2020.12@ -pr:b=default -pr:h=default
 popd
 
-@REM pushd recipes/ninja
-@REM conan create all/conanfile.py ninja/1.11.1@ -pr:b=default -pr:h=default
-@REM popd
-
-@REM pushd recipes/meson
-@REM conan create all/conanfile.py meson/0.59.3@ -pr:b=default -pr:h=default
-@REM popd
-
 pushd recipes/jom
 conan create all/conanfile.py jom/1.1.3@ -pr:b=default -pr:h=default
 popd
