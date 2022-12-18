@@ -55,7 +55,7 @@ class QtConan(ConanFile):
 
     default_options = {
         "shared": False,
-        "opengl": "desktop",
+        "opengl": "no",
         "device": None,
         "cross_compile": None,
         "sysroot": None,
