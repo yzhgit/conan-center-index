@@ -148,11 +148,6 @@ class QtConan(ConanFile):
             raise ConanInvalidConfiguration("option cross_compile must be set for cross compilation "
                                             "cf https://doc.qt.io/qt-5/configure-options.html#cross-compilation-options")
 
-    def requirements(self):
-        if self.settings.os in ["Linux", "FreeBSD"]: # gui require
-            self.requires("xorg/system")
-            self.requires("xkbcommon/1.4.1")
-
     def source(self):
         get(self, **self.conan_data["sources"][self.version],
             strip_root=True, destination="qt5")
@@ -674,10 +669,7 @@ Examples = bin/datadir/examples""")
             self.cpp_info.components[componentname].defines = []
 
         # self.options.gui begin
-        gui_reqs = []
-        if self.settings.os in ["Linux", "FreeBSD"]:
-            gui_reqs.extend(["xorg::xorg", "xkbcommon::xkbcommon"])
-        _create_module("Gui", gui_reqs)
+        _create_module("Gui")
         _add_build_module("qtGui", self._cmake_qt5_private_file("Gui"))
 
         event_dispatcher_reqs = ["Core", "Gui"]
@@ -734,8 +726,8 @@ Examples = bin/datadir/examples""")
             service_support_reqs = ["Core", "Gui"]
             _create_module("ServiceSupport", service_support_reqs)
             _create_module("EdidSupport")
-            _create_module("XkbCommonSupport", ["Core", "Gui", "xkbcommon::libxkbcommon-x11"])
-            xcb_qpa_reqs = ["Core", "Gui", "ServiceSupport", "ThemeSupport", "FontDatabaseSupport", "EdidSupport", "XkbCommonSupport", "xorg::xorg"]
+            _create_module("XkbCommonSupport", ["Core", "Gui"])
+            xcb_qpa_reqs = ["Core", "Gui", "ServiceSupport", "ThemeSupport", "FontDatabaseSupport", "EdidSupport", "XkbCommonSupport"]
             _create_module("XcbQpa", xcb_qpa_reqs, has_include_dir=False)
             _create_plugin("QXcbIntegrationPlugin", "qxcb", "platforms", ["Core", "Gui", "XcbQpa"])
         # self.options.gui end
