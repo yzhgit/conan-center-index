@@ -1,8 +1,0 @@
-[
-  {
-    "directory": "E:\\OpenSource\\conan-center-private\\recipes\\meson\\all\\test_package\\build-release",
-    "command": "\"cl\" \"-Itest_package.exe.p\" \"-I.\" \"-I..\" \"-DNDEBUG\" \"/MD\" \"/nologo\" \"/showIncludes\" \"/W2\" \"/EHsc\" \"/O2\" \"/Gw\" \"/Fdtest_package.exe.p\\test_package.cpp.pdb\" /Fotest_package.exe.p/test_package.cpp.obj \"/c\" ../test_package.cpp",
-    "file": "../test_package.cpp",
-    "output": "test_package.exe.p/test_package.cpp.obj"
-  }
-]
